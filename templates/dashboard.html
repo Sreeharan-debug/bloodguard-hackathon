@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Blood Bank — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css?v=6" />
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <style>
+    html,
+    body {
+      background: #ffffff !important;
+      color-scheme: light !important;
+    }
+
+    .app-layout {
+      background: #ffffff !important;
+    }
+
+    .main {
+      background: #ffffff !important;
+    }
+  </style>
+</head>
+
+<body style="background:#ffffff!important">
+
+  <!-- ALERT BANNER -->
+  <div id="alert-banner" class="alert-banner hidden">
+    <span class="ab-dot"></span>
+    <strong>Tamper Alert</strong>
+    <span id="ab-text">Unauthorized access detected</span>
+    <button onclick="clearAlert()" class="ab-dismiss">Dismiss</button>
+  </div>
+
+  <!-- LAYOUT WRAP -->
+  <div class="app-layout">
+
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="sidebar">
+      <div class="sb-brand">
+        <div class="sb-brand-icon">🩸</div>
+        <div>
+          <div class="sb-brand-name">Blood BankS</div>
+          <div class="sb-brand-sub">Web app</div>
+        </div>
+      </div>
+
+      <nav class="sb-nav">
+        <a class="sb-item active" data-sec="home" href="#" onclick="goSec(this)">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h4a1 1 0 001-1v-3h2v3a1 1 0 001 1h4a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+          Home
+        </a>
+        <a class="sb-item" data-sec="analytics" href="#" onclick="goSec(this)">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+          </svg>
+          Analytics
+        </a>
+        <a class="sb-item" data-sec="inventory" href="#" onclick="goSec(this)">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+            <path fill-rule="evenodd"
+              d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+              clip-rule="evenodd" />
+          </svg>
+          Inventory
+        </a>
+        <a class="sb-item" data-sec="events" href="#" onclick="goSec(this)">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd" />
+          </svg>
+          Events
+          <span class="sb-badge" id="sb-ev-badge">0</span>
+        </a>
+        <a class="sb-item" data-sec="staff" href="#" onclick="goSec(this)">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+          </svg>
+          Staff
+        </a>
+        <a class="sb-item" data-sec="add" href="#" onclick="goSec(this)">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              clip-rule="evenodd" />
+          </svg>
+          Add Unit
+        </a>
+      </nav>
+
+      <div class="sb-spacer"></div>
+
+      <nav class="sb-nav sb-nav-bottom">
+        <a class="sb-item" href="#">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+              clip-rule="evenodd" />
+          </svg>
+          Settings
+        </a>
+        <a class="sb-item" href="#">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd" />
+          </svg>
+          About
+        </a>
+        <a class="sb-item" href="#">
+          <svg class="sb-ico" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+            <path
+              d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+          </svg>
+          Feedback
+        </a>
+      </nav>
+
+      <div class="sb-divider"></div>
+
+      <!-- Expiry alert card (like MUI "Plan about to expire") -->
+      <div class="sb-alert-card" id="sb-expiry-card">
+        <div class="sb-alert-icon">⏰</div>
+        <div class="sb-alert-title">Units expiring soon</div>
+        <div class="sb-alert-body" id="sb-expiry-msg">Check inventory now.</div>
+        <a href="#" class="sb-alert-btn" onclick="goSec(document.querySelector('[data-sec=inventory]'))">View inventory
+          →</a>
+      </div>
+
+      <div class="sb-divider"></div>
+
+      <div class="sb-user">
+        <div class="sb-user-av" id="sb-av">U</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sb-uname">{{ username }}</div>
+          <div class="sb-user-email">Staff Operator</div>
+        </div>
+        <a href="/logout" class="sb-logout" title="Sign out">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+            <path fill-rule="evenodd"
+              d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+              clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ══ MAIN ══ -->
+    <main class="main">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="tb-breadcrumb">
+          <span class="tb-bc-root">Dashboard</span>
+          <span class="tb-bc-sep">›</span>
+          <span class="tb-bc-page" id="tb-page">Home</span>
+        </div>
+        <div class="tb-right">
+          <div class="tb-search">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" style="color:#9CA3AF">
+              <path fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd" />
+            </svg>
+            <input type="search" placeholder="Search…" class="tb-search-input" id="global-search" />
+          </div>
+          <div class="tb-date" id="tb-date"></div>
+          <div class="lock-chip" id="lock-chip">
+            <span id="lock-chip-ic">🔓</span>
+            <span id="lock-chip-lbl">Disarmed</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION: HOME ═════════════════════════════════════════════════ -->
+      <section class="sec active" id="sec-home">
+        <div class="sec-title">Overview</div>
+
+        <!-- ── Live sensor readings strip ───────────────────────── -->
+        <div class="sensor-strip">
+
+          <!-- Temperature -->
+          <div class="sensor-tile" id="st-temp">
+            <div class="st-label">🌡️ Chamber Temperature</div>
+            <div class="st-val-row">
+              <div class="st-val" id="st-temp-val">—</div>
+              <div class="st-unit">°C</div>
+            </div>
+            <div class="st-bar-wrap">
+              <div class="st-bar" id="stb-temp"></div>
+            </div>
+            <div class="st-status" id="sts-temp">Loading…</div>
+            <canvas class="st-spark" id="stk-temp" height="48"></canvas>
+          </div>
+
+          <!-- Gas / Air Quality -->
+          <div class="sensor-tile" id="st-gas">
+            <div class="st-label">💨 Air Quality (Gas)</div>
+            <div class="st-val-row">
+              <div class="st-val" id="st-gas-val">—</div>
+              <div class="st-unit">ADC</div>
+            </div>
+            <div class="st-bar-wrap">
+              <div class="st-bar" id="stb-gas"></div>
+            </div>
+            <div class="st-status" id="sts-gas">Loading…</div>
+            <canvas class="st-spark" id="stk-gas" height="48"></canvas>
+          </div>
+
+          <!-- Distance -->
+          <div class="sensor-tile" id="st-dist">
+            <div class="st-label">📏 Unit Distance</div>
+            <div class="st-val-row">
+              <div class="st-val" id="st-dist-val">—</div>
+              <div class="st-unit">cm</div>
+            </div>
+            <div class="st-bar-wrap">
+              <div class="st-bar" id="stb-dist"></div>
+            </div>
+            <div class="st-status" id="sts-dist">Loading…</div>
+            <canvas class="st-spark" id="stk-dist" height="48"></canvas>
+          </div>
+
+          <!-- Internal Light -->
+          <div class="sensor-tile" id="st-light">
+            <div class="st-label">💡 Internal Light</div>
+            <div class="st-val-row">
+              <div class="st-val" id="st-light-val">—</div>
+              <div class="st-unit">ADC</div>
+            </div>
+            <div class="st-bar-wrap">
+              <div class="st-bar" id="stb-light"></div>
+            </div>
+            <div class="st-status" id="sts-light">Loading…</div>
+            <canvas class="st-spark" id="stk-light" height="48"></canvas>
+          </div>
+
+        </div><!-- /sensor-strip -->
+        <div class="stat-row">
+          <!-- Card 1: Temperature -->
+          <div class="stat-card" id="sc-temp">
+            <div class="sc-label">Chamber Temp</div>
+            <div class="sc-top-row">
+              <div class="sc-val" id="sc-temp-val">—</div>
+              <div class="sc-badge" id="sc-temp-badge"></div>
+            </div>
+            <div class="sc-sub">Safe range: 2–8 °C</div>
+            <canvas class="sc-spark" id="spark-temp" height="56"></canvas>
+          </div>
+
+          <!-- Card 2: Total Units -->
+          <div class="stat-card" id="sc-units">
+            <div class="sc-label">Blood Units</div>
+            <div class="sc-top-row">
+              <div class="sc-val" id="sc-units-val">—</div>
+              <div class="sc-badge green" id="sc-units-badge"></div>
+            </div>
+            <div class="sc-sub">In storage now</div>
+            <canvas class="sc-spark" id="spark-units" height="56"></canvas>
+          </div>
+
+          <!-- Card 3: Expiring -->
+          <div class="stat-card" id="sc-expiring">
+            <div class="sc-label">Expiring ≤ 7 days</div>
+            <div class="sc-top-row">
+              <div class="sc-val" id="sc-exp-val">—</div>
+              <div class="sc-badge amber" id="sc-exp-badge"></div>
+            </div>
+            <div class="sc-sub">Priority dispatch needed</div>
+            <canvas class="sc-spark" id="spark-exp" height="56"></canvas>
+          </div>
+
+          <!-- Card 4: Tamper events -->
+          <div class="stat-card" id="sc-tamper">
+            <div class="sc-label">Tamper Events</div>
+            <div class="sc-top-row">
+              <div class="sc-val" id="sc-tamper-val">—</div>
+              <div class="sc-badge red" id="sc-tamper-badge"></div>
+            </div>
+            <div class="sc-sub">Last 24 hours</div>
+            <canvas class="sc-spark" id="spark-tamper" height="56"></canvas>
+          </div>
+
+          <!-- CTA card (like "Explore your data") -->
+          <div class="cta-card">
+            <div class="cta-icon">📡</div>
+            <div class="cta-title">Monitor chamber</div>
+            <div class="cta-body">View live sensor telemetry and door status in real-time.</div>
+            <div class="cta-status-row">
+              <span class="cta-dot" id="cta-conn-dot"></span>
+              <span id="cta-conn-lbl">Connecting…</span>
+            </div>
+            <div class="chamber-door-status" id="cta-door">
+              <span class="door-ic" id="cta-door-ic">🔒</span>
+              <span id="cta-door-lbl">Door Secured</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="charts-row">
+          <!-- Left: Area chart — Temperature history -->
+          <div class="chart-card wide">
+            <div class="cc-header">
+              <div>
+                <div class="cc-title">Temperature Trend</div>
+                <div class="cc-val-row">
+                  <span class="cc-bigval" id="cc-temp-now">—</span>
+                  <span class="cc-badge" id="cc-temp-status">—</span>
+                </div>
+                <div class="cc-sub">Chamber readings — last 60 samples</div>
+              </div>
+            </div>
+            <canvas id="chart-temp-area" height="200"></canvas>
+          </div>
+
+          <!-- Right: Bar chart — Gas + Light -->
+          <div class="chart-card">
+            <div class="cc-header">
+              <div>
+                <div class="cc-title">Gas &amp; Light Levels</div>
+                <div class="cc-val-row">
+                  <span class="cc-bigval" id="cc-gas-now">—</span>
+                  <span class="cc-badge" id="cc-gas-status">—</span>
+                </div>
+                <div class="cc-sub">Air quality and internal light (last 30 readings)</div>
+              </div>
+            </div>
+            <canvas id="chart-gas-bar" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- Details table section -->
+        <div class="sec-title" style="margin-top:24px">Details</div>
+        <div class="table-card">
+          <div class="table-toolbar">
+            <input type="search" class="tbl-search" placeholder="Search units…" id="home-search"
+              oninput="renderHomeTable()" />
+            <div class="tbl-filters">
+              <button class="flt active" onclick="setHomeFlt('ALL',this)">All</button>
+              <button class="flt" onclick="setHomeFlt('STORED',this)">Stored</button>
+              <button class="flt" onclick="setHomeFlt('TRANSFUSED',this)">Transfused</button>
+              <button class="flt" onclick="setHomeFlt('QUARANTINE',this)">Quarantine</button>
+            </div>
+          </div>
+          <table class="tbl" id="home-table">
+            <thead>
+              <tr>
+                <th>Unit ID</th>
+                <th>Blood Type</th>
+                <th>Donor</th>
+                <th>Status</th>
+                <th>Collected</th>
+                <th>Expires</th>
+                <th>Recipient</th>
+                <th>Location</th>
+                <th>Daily Readings</th>
+              </tr>
+            </thead>
+            <tbody id="home-tbody">
+              <tr>
+                <td colspan="9" class="td-empty">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══ SECTION: ANALYTICS ══════════════════════════════════════ -->
+      <section class="sec" id="sec-analytics">
+        <div class="sec-title">Chamber Analytics</div>
+
+        <!-- Live stat pills row -->
+        <div class="an-stat-row">
+          <div class="an-stat-pill" id="anp-temp">
+            <span class="anp-dot" style="background:#1E88E5"></span>
+            <span class="anp-label">Temperature</span>
+            <span class="anp-val" id="anp-temp-val">—</span>
+            <span class="anp-unit">°C</span>
+            <span class="anp-badge" id="anp-temp-badge">—</span>
+          </div>
+          <div class="an-stat-pill" id="anp-gas">
+            <span class="anp-dot" style="background:#F59E0B"></span>
+            <span class="anp-label">Gas / Air</span>
+            <span class="anp-val" id="anp-gas-val">—</span>
+            <span class="anp-unit">ADC</span>
+            <span class="anp-badge" id="anp-gas-badge">—</span>
+          </div>
+          <div class="an-stat-pill" id="anp-dist">
+            <span class="anp-dot" style="background:#8B5CF6"></span>
+            <span class="anp-label">Unit Distance</span>
+            <span class="anp-val" id="anp-dist-val">—</span>
+            <span class="anp-unit">cm</span>
+            <span class="anp-badge" id="anp-dist-badge">—</span>
+          </div>
+          <div class="an-stat-pill" id="anp-light">
+            <span class="anp-dot" style="background:#EC4899"></span>
+            <span class="anp-label">Internal Light</span>
+            <span class="anp-val" id="anp-light-val">—</span>
+            <span class="anp-unit">ADC</span>
+            <span class="anp-badge" id="anp-light-badge">—</span>
+          </div>
+          <div class="an-stat-pill">
+            <span class="anp-dot" style="background:#6B7280"></span>
+            <span class="anp-label">Samples</span>
+            <span class="anp-val" id="anp-samples">—</span>
+            <span class="anp-unit">pts</span>
+            <span class="anp-badge" id="anp-sample-badge" style="background:#F3F4F6;color:#374151">LIVE</span>
+          </div>
+        </div>
+
+        <!-- Chart 1: Temperature — full width -->
+        <div class="an-chart-card">
+          <div class="an-chart-header">
+            <div class="an-chart-left">
+              <div class="an-chart-icon" style="background:#EFF6FF;color:#1E88E5">🌡️</div>
+              <div>
+                <div class="an-chart-title">Chamber A — Temperature</div>
+                <div class="an-chart-sub">Safe operating range: 2–8 °C · Alert beyond ±2 °C of bounds</div>
+              </div>
+            </div>
+            <div class="an-chart-right">
+              <div class="an-legend-item"><span class="an-dot" style="background:#1E88E5"></span>Temp (°C)</div>
+              <div class="an-zone-label">🟢 Safe zone 2–8°C</div>
+            </div>
+          </div>
+          <canvas id="an-temp" height="160"></canvas>
+        </div>
+
+        <!-- Chart 2: Gas / Air Quality — full width -->
+        <div class="an-chart-card">
+          <div class="an-chart-header">
+            <div class="an-chart-left">
+              <div class="an-chart-icon" style="background:#FFFBEB;color:#B45309">💨</div>
+              <div>
+                <div class="an-chart-title">Chamber A — Air Quality (Gas Sensor)</div>
+                <div class="an-chart-sub">ADC reading · Danger threshold: 400 · Normal: &lt; 400</div>
+              </div>
+            </div>
+            <div class="an-chart-right">
+              <div class="an-legend-item"><span class="an-dot" style="background:#F59E0B"></span>Gas (ADC)</div>
+              <div class="an-zone-label">🔴 Alert &gt; 400 ADC</div>
+            </div>
+          </div>
+          <canvas id="an-gas" height="160"></canvas>
+        </div>
+
+        <!-- Chart 3: Distance — full width -->
+        <div class="an-chart-card">
+          <div class="an-chart-header">
+            <div class="an-chart-left">
+              <div class="an-chart-icon" style="background:#F5F3FF;color:#7C3AED">📏</div>
+              <div>
+                <div class="an-chart-title">Chamber A — Unit Position (Ultrasonic Distance)</div>
+                <div class="an-chart-sub">Expected baseline: ~15 cm · ±5 cm tolerance band</div>
+              </div>
+            </div>
+            <div class="an-chart-right">
+              <div class="an-legend-item"><span class="an-dot" style="background:#8B5CF6"></span>Distance (cm)</div>
+              <div class="an-zone-label">🟡 Baseline 10–20 cm</div>
+            </div>
+          </div>
+          <canvas id="an-dist" height="160"></canvas>
+        </div>
+
+        <!-- Chart 4: Internal Light — full width -->
+        <div class="an-chart-card">
+          <div class="an-chart-header">
+            <div class="an-chart-left">
+              <div class="an-chart-icon" style="background:#FDF2F8;color:#BE185D">💡</div>
+              <div>
+                <div class="an-chart-title">Chamber A — Internal Light Level (LDR)</div>
+                <div class="an-chart-sub">High reading indicates door/lid is open · Normal (dark): &lt; 200 ADC</div>
+              </div>
+            </div>
+            <div class="an-chart-right">
+              <div class="an-legend-item"><span class="an-dot" style="background:#EC4899"></span>Light (ADC)</div>
+              <div class="an-zone-label">🔴 Lid open &gt; 200 ADC</div>
+            </div>
+          </div>
+          <canvas id="an-light" height="160"></canvas>
+        </div>
+
+        <!-- Bottom row: event donut + stats table -->
+        <div class="an-bottom-row">
+          <div class="an-chart-card an-donut-card">
+            <div class="an-chart-header">
+              <div class="an-chart-left">
+                <div class="an-chart-icon" style="background:#F0FDF4;color:#15803D">📋</div>
+                <div>
+                  <div class="an-chart-title">Event Breakdown</div>
+                  <div class="an-chart-sub">All recorded chamber events</div>
+                </div>
+              </div>
+            </div>
+            <canvas id="an-donut" height="200"></canvas>
+          </div>
+
+          <div class="an-chart-card an-stats-card">
+            <div class="an-chart-header">
+              <div class="an-chart-left">
+                <div class="an-chart-icon" style="background:#EFF6FF;color:#1E88E5">📊</div>
+                <div>
+                  <div class="an-chart-title">Sensor Statistics</div>
+                  <div class="an-chart-sub">Min / Max / Avg over recorded history</div>
+                </div>
+              </div>
+            </div>
+            <table class="stats-tbl" id="an-stats-tbl">
+              <thead>
+                <tr>
+                  <th>Sensor</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                  <th>Avg</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="an-stats-tbody">
+                <tr>
+                  <td colspan="5" style="text-align:center;padding:20px;color:#9CA3AF">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ═══ SECTION: INVENTORY ═══════════════════════════════════════ -->
+      <section class="sec" id="sec-inventory">
+        <div class="sec-title">Blood Inventory</div>
+
+        <!-- Chamber mini-charts row -->
+        <div class="chamber-row" id="chamber-row">
+
+          <!-- Chamber A -->
+          <div class="chamber-card" id="chcard-A">
+            <div class="chamber-card-header">
+              <div class="chamber-badge" style="background:#EFF6FF;color:#1D4ED8">A</div>
+              <div>
+                <div class="chamber-name">Chamber A</div>
+                <div class="chamber-count" id="ch-A-count">— units</div>
+              </div>
+              <span class="chamber-status" id="ch-A-status">—</span>
+            </div>
+            <div class="chamber-charts">
+              <div class="ch-mini">
+                <div class="ch-mini-label">🌡 Temp</div>
+                <div class="ch-mini-val" id="ch-A-temp">—</div>
+                <canvas id="chk-A-temp" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">💨 Gas</div>
+                <div class="ch-mini-val" id="ch-A-gas">—</div>
+                <canvas id="chk-A-gas" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">📏 Dist</div>
+                <div class="ch-mini-val" id="ch-A-dist">—</div>
+                <canvas id="chk-A-dist" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">💡 Light</div>
+                <div class="ch-mini-val" id="ch-A-light">—</div>
+                <canvas id="chk-A-light" height="40"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chamber B -->
+          <div class="chamber-card" id="chcard-B">
+            <div class="chamber-card-header">
+              <div class="chamber-badge" style="background:#F0FDF4;color:#15803D">B</div>
+              <div>
+                <div class="chamber-name">Chamber B</div>
+                <div class="chamber-count" id="ch-B-count">— units</div>
+              </div>
+              <span class="chamber-status" id="ch-B-status">—</span>
+            </div>
+            <div class="chamber-charts">
+              <div class="ch-mini">
+                <div class="ch-mini-label">🌡 Temp</div>
+                <div class="ch-mini-val" id="ch-B-temp">—</div>
+                <canvas id="chk-B-temp" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">💨 Gas</div>
+                <div class="ch-mini-val" id="ch-B-gas">—</div>
+                <canvas id="chk-B-gas" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">📏 Dist</div>
+                <div class="ch-mini-val" id="ch-B-dist">—</div>
+                <canvas id="chk-B-dist" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">💡 Light</div>
+                <div class="ch-mini-val" id="ch-B-light">—</div>
+                <canvas id="chk-B-light" height="40"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chamber C -->
+          <div class="chamber-card" id="chcard-C">
+            <div class="chamber-card-header">
+              <div class="chamber-badge" style="background:#FEF2F2;color:#B91C1C">C</div>
+              <div>
+                <div class="chamber-name">Chamber C</div>
+                <div class="chamber-count" id="ch-C-count">— units</div>
+              </div>
+              <span class="chamber-status" id="ch-C-status">—</span>
+            </div>
+            <div class="chamber-charts">
+              <div class="ch-mini">
+                <div class="ch-mini-label">🌡 Temp</div>
+                <div class="ch-mini-val" id="ch-C-temp">—</div>
+                <canvas id="chk-C-temp" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">💨 Gas</div>
+                <div class="ch-mini-val" id="ch-C-gas">—</div>
+                <canvas id="chk-C-gas" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">📏 Dist</div>
+                <div class="ch-mini-val" id="ch-C-dist">—</div>
+                <canvas id="chk-C-dist" height="40"></canvas>
+              </div>
+              <div class="ch-mini">
+                <div class="ch-mini-label">💡 Light</div>
+                <div class="ch-mini-val" id="ch-C-light">—</div>
+                <canvas id="chk-C-light" height="40"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /chamber-row -->
+
+        <!-- Units table (filterable by chamber) -->
+        <div class="table-card" style="margin-top:0">
+          <div class="table-toolbar">
+            <input type="search" class="tbl-search" placeholder="Search by unit ID, blood type, donor…" id="inv-search"
+              oninput="renderInventory()" />
+            <div class="tbl-filters">
+              <button class="flt active" onclick="setInvFlt('ALL',this)">All Chambers</button>
+              <button class="flt" onclick="setInvCh('Chamber A',this)">Chamber A</button>
+              <button class="flt" onclick="setInvCh('Chamber B',this)">Chamber B</button>
+              <button class="flt" onclick="setInvCh('Chamber C',this)">Chamber C</button>
+              <button class="flt" onclick="setInvFlt('STORED',this)">Stored</button>
+              <button class="flt" onclick="setInvFlt('QUARANTINE',this)">Quarantine</button>
+            </div>
+          </div>
+          <table class="tbl" id="inv-table">
+            <thead>
+              <tr>
+                <th>Unit ID</th>
+                <th>Type</th>
+                <th>Donor</th>
+                <th>Donor ID</th>
+                <th>Collected</th>
+                <th>Expires</th>
+                <th>Recipient</th>
+                <th>Status</th>
+                <th>Location</th>
+                <th>QR</th>
+              </tr>
+            </thead>
+            <tbody id="inv-tbody">
+              <tr>
+                <td colspan="10" class="td-empty">Loading inventory…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══ SECTION: STAFF ═══════════════════════════════════════════ -->
+      <section class="sec" id="sec-staff">
+        <div class="sec-title">Staff Management</div>
+
+        <!-- Staff stat pills -->
+        <div class="staff-stat-row">
+          <div class="staff-stat-pill">
+            <div class="ssp-icon" style="background:#EFF6FF;color:#1D4ED8">👥</div>
+            <div>
+              <div class="ssp-val" id="ssp-total">—</div>
+              <div class="ssp-label">Total Access Records</div>
+            </div>
+          </div>
+          <div class="staff-stat-pill">
+            <div class="ssp-icon" style="background:#F0FDF4;color:#15803D">✅</div>
+            <div>
+              <div class="ssp-val" id="ssp-today">—</div>
+              <div class="ssp-label">Accesses Today</div>
+            </div>
+          </div>
+          <div class="staff-stat-pill">
+            <div class="ssp-icon" style="background:#FFFBEB;color:#B45309">🏥</div>
+            <div>
+              <div class="ssp-val" id="ssp-chambers">A · B · C</div>
+              <div class="ssp-label">Active Chambers</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two-column layout: Form + QR Scanner -->
+        <div class="staff-main-row">
+
+          <!-- Left: Access form -->
+          <div class="staff-form-card">
+            <div class="staff-card-title">📋 Log Chamber Access</div>
+            <div class="staff-card-sub">Fill in the details below, then scan or enter the blood unit QR code</div>
+
+            <form id="staff-form" onsubmit="submitStaffCheckin(event)">
+              <div class="staff-form-grid">
+                <div class="fg">
+                  <label class="flabel">Staff Name <span style="color:#EF4444">*</span></label>
+                  <input class="finput" id="sf-name" type="text" placeholder="e.g. Dr. Riya Patel" required />
+                </div>
+                <div class="fg">
+                  <label class="flabel">Staff ID / Badge</label>
+                  <input class="finput" id="sf-badge" type="text" placeholder="e.g. STF-001" />
+                </div>
+                <div class="fg">
+                  <label class="flabel">Chamber Accessed <span style="color:#EF4444">*</span></label>
+                  <select class="finput" id="sf-chamber" required>
+                    <option value="">Select chamber…</option>
+                    <option>Chamber A</option>
+                    <option>Chamber B</option>
+                    <option>Chamber C</option>
+                  </select>
+                </div>
+                <div class="fg">
+                  <label class="flabel">Action</label>
+                  <select class="finput" id="sf-action">
+                    <option>ACCESSED</option>
+                    <option>RETRIEVED</option>
+                    <option>DEPOSITED</option>
+                    <option>INSPECTED</option>
+                    <option>TRANSFERRED</option>
+                  </select>
+                </div>
+                <div class="fg fg-full">
+                  <label class="flabel">Blood Unit ID <span style="color:#6B7280;font-weight:400">(scan QR or type
+                      manually)</span></label>
+                  <div class="uid-row">
+                    <input class="finput" id="sf-uid" type="text" placeholder="e.g. BU-2024-001" />
+                    <button type="button" class="qr-scan-btn" onclick="openQRScanner()" title="Scan QR Code">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"
+                        height="18">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z" />
+                      </svg>
+                      Scan QR
+                    </button>
+                  </div>
+                </div>
+                <div class="fg fg-full">
+                  <label class="flabel">Notes</label>
+                  <input class="finput" id="sf-notes" type="text" placeholder="Optional remarks…" />
+                </div>
+              </div>
+              <div id="staff-form-msg" class="form-msg" style="margin-top:10px"></div>
+              <button class="btn-primary" id="btn-staff-submit" type="submit" style="margin-top:14px;width:100%">Log
+                Access</button>
+            </form>
+          </div>
+
+          <!-- Right: QR scanner + unit preview -->
+          <div class="staff-qr-card">
+            <div class="staff-card-title">📷 QR Scanner</div>
+            <div class="staff-card-sub">Point camera at a blood unit QR code to auto-fill Unit ID</div>
+            <div class="qr-scanner-wrap" id="qr-scanner-wrap">
+              <video id="qr-video" autoplay muted playsinline style="display:none;width:100%;border-radius:8px"></video>
+              <canvas id="qr-canvas" style="display:none"></canvas>
+              <div class="qr-placeholder" id="qr-placeholder">
+                <svg viewBox="0 0 64 64" fill="none" stroke="#D1D5DB" stroke-width="2" width="64" height="64">
+                  <rect x="4" y="4" width="22" height="22" rx="3" />
+                  <rect x="38" y="4" width="22" height="22" rx="3" />
+                  <rect x="4" y="38" width="22" height="22" rx="3" />
+                  <rect x="10" y="10" width="10" height="10" />
+                  <rect x="44" y="10" width="10" height="10" />
+                  <rect x="10" y="44" width="10" height="10" />
+                  <path
+                    d="M38 38h4v4h-4zM46 38h4v4h-4zM38 46h4v4h-4zM46 46h4v4h-4zM54 38h4v4h-4zM54 46h4v4h-4zM38 54h4v4h-4zM46 54h4v4h-4z" />
+                </svg>
+                <p>Camera not started</p>
+                <button class="btn-primary" onclick="openQRScanner()">Start Camera</button>
+              </div>
+              <div class="qr-status" id="qr-status"></div>
+              <button class="btn-outline" id="btn-stop-qr" onclick="stopQRScanner()"
+                style="display:none;margin-top:8px;width:100%">Stop Camera</button>
+            </div>
+            <!-- Unit preview after scan -->
+            <div class="unit-preview" id="unit-preview" style="display:none">
+              <div class="up-header">Unit Found</div>
+              <div id="up-content"></div>
+            </div>
+          </div>
+
+        </div><!-- /staff-main-row -->
+
+        <!-- Staff access log table -->
+        <div class="sec-title" style="margin-top:24px;font-size:14px">Access Log</div>
+        <div class="table-card">
+          <div class="table-toolbar">
+            <span id="staff-log-count" style="font-size:12px;color:#6B7280">Loading…</span>
+            <button class="flt active" onclick="loadStaffLog()" style="margin-left:auto">↻ Refresh</button>
+          </div>
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Staff Name</th>
+                <th>Chamber</th>
+                <th>Unit ID</th>
+                <th>Action</th>
+                <th>Ago</th>
+              </tr>
+            </thead>
+            <tbody id="staff-log-tbody">
+              <tr>
+                <td colspan="6" class="td-empty">No access records yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══ SECTION: EVENTS ══════════════════════════════════════════ -->
+      <section class="sec" id="sec-events">
+        <div class="sec-title">Event Stream</div>
+        <div class="table-card">
+          <div class="table-toolbar">
+            <div class="tbl-filters">
+              <button class="flt active" data-ef="ALL" onclick="setEvFlt('ALL',this)">All</button>
+              <button class="flt" data-ef="TAMPER" onclick="setEvFlt('TAMPER',this)">Tamper</button>
+              <button class="flt" data-ef="ACCESS" onclick="setEvFlt('ACCESS',this)">Access</button>
+              <button class="flt" data-ef="SYSTEM" onclick="setEvFlt('SYSTEM',this)">System</button>
+              <button class="flt" data-ef="ENV" onclick="setEvFlt('ENV',this)">Environment</button>
+            </div>
+            <span class="ev-count" id="ev-count">— events</span>
+          </div>
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Source</th>
+                <th>Event</th>
+                <th>Type</th>
+                <th>Score</th>
+                <th>Age</th>
+              </tr>
+            </thead>
+            <tbody id="ev-tbody">
+              <tr>
+                <td colspan="6" class="td-empty">Loading events…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══ SECTION: ADD UNIT ════════════════════════════════════════ -->
+      <section class="sec" id="sec-add">
+        <div class="sec-title">Register New Blood Unit</div>
+        <div class="form-card">
+          <form id="add-form" onsubmit="submitUnit(event)">
+            <div class="form-section">Donor Information</div>
+            <div class="form-grid">
+              <div class="fg"><label>Unit ID *</label><input id="f-uid" type="text" placeholder="BU-2024-006"
+                  required /></div>
+              <div class="fg">
+                <label>Blood Type *</label>
+                <select id="f-bt" required>
+                  <option value="">Select…</option>
+                  <option>O+</option>
+                  <option>O-</option>
+                  <option>A+</option>
+                  <option>A-</option>
+                  <option>B+</option>
+                  <option>B-</option>
+                  <option>AB+</option>
+                  <option>AB-</option>
+                </select>
+              </div>
+              <div class="fg"><label>Donor Full Name *</label><input id="f-dname" type="text" required /></div>
+              <div class="fg"><label>Donor Date of Birth</label><input id="f-ddob" type="date" /></div>
+              <div class="fg"><label>Donor ID</label><input id="f-did" type="text" placeholder="DID-xxxx" /></div>
+              <div class="fg"><label>Collection Date *</label><input id="f-cdate" type="date" required /></div>
+              <div class="fg"><label>Expiry Date *</label><input id="f-edate" type="date" required /></div>
+              <div class="fg"><label>Storage Location</label><input id="f-loc" type="text" value="Chamber A" /></div>
+            </div>
+            <div class="form-section" style="margin-top:20px">Recipient <span class="opt">(optional)</span></div>
+            <div class="form-grid">
+              <div class="fg"><label>Recipient Name</label><input id="f-rname" type="text" /></div>
+              <div class="fg"><label>Recipient ID</label><input id="f-rid" type="text" placeholder="RID-xxxx" /></div>
+              <div class="fg fg-full"><label>Notes</label><textarea id="f-notes" rows="3"></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" id="btn-add">Register Unit</button>
+              <span id="form-msg" class="form-msg"></span>
+            </div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- QR MODAL -->
+  <div id="qr-modal" class="modal-overlay hidden" onclick="closeQR(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeQR()">✕</button>
+      <div class="modal-title" id="qr-title">QR Code</div>
+      <div class="modal-sub" id="qr-sub"></div>
+      <img id="qr-img" src="" alt="QR Code" class="qr-img" />
+      <a id="qr-dl" href="#" download="qr.png" class="btn-primary btn-sm">Download PNG</a>
+    </div>
+  </div>
+
+  <script>const STAFF_USER = "{{ username }}";</script>
+  <script src="/static/dashboard.js"></script>
+</body>
+
+</html>
